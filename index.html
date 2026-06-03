@@ -425,11 +425,11 @@
             chairLineTotal.innerText = formatMoney(chairTotalValue);
             summarySubtotal.innerText = formatMoney(currentSubtotal);
 
-            // Handle B2B Discount if applied
+            // Handle B2B Discount if applied AND subtotal > 10000
             let currentTotal = currentSubtotal;
             let discountAmount = currentSubtotal * DISCOUNT_RATE;
 
-            if (b2bApplied) {
+            if (b2bApplied && currentSubtotal > 10000) {
                 currentTotal = currentSubtotal - discountAmount;
                 summaryB2bAmount.innerText = '-' + formatMoney(discountAmount);
                 summaryB2bRow.classList.remove('hidden');
@@ -451,7 +451,7 @@
             }
 
             // Evaluate RFP Threshold Based on Final Total
-            evaluateCheckoutState(currentTotal);
+            evaluateCheckoutState(currentTotal, currentSubtotal);
         }
 
         // --- Event Listeners for + / - Buttons --- //
@@ -494,7 +494,7 @@
         });
 
         // RFP Threshold Evaluator
-        function evaluateCheckoutState(total) {
+        function evaluateCheckoutState(total, subtotal) {
             // 1. Manage Dynamic Subtext based on total
             if (total > 20000) {
                 checkoutSubtext.innerText = 'You can Submit RFP now, and our Steelcase experience specialist shall be contacting you within 2 working days.';
@@ -517,9 +517,11 @@
                 rfpBtnWrapper.classList.remove('flex');
             }
             
-            // Ensure retroactive logic is maintained if reverting back
-            if (b2bApplied) {
+            // 3. Ensure retroactive logic is maintained if reverting back
+            if (b2bApplied && subtotal > 10000) {
                 showRetroactiveTerms();
+            } else if (b2bApplied && subtotal <= 10000) {
+                hideRetroactiveTerms();
             }
         }
 
@@ -584,8 +586,7 @@
             claimLaterBanner.classList.add('hidden'); 
             
             b2bApplied = true;
-            updateCart(); // Recalculate to apply the discount
-            showRetroactiveTerms();
+            updateCart(); // Recalculate to apply the discount (updateCart now triggers terms evaluation automatically)
         });
 
         function showRetroactiveTerms() {
@@ -595,7 +596,20 @@
                 checkoutButton.classList.add('opacity-50', 'cursor-not-allowed');
                 checkoutButton.classList.remove('hover:bg-black');
                 checkoutButton.innerText = 'Accept Terms to Checkout';
+            } else {
+                checkoutButton.disabled = false;
+                checkoutButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                checkoutButton.classList.add('hover:bg-black');
+                checkoutButton.innerText = 'Continue to Checkout';
             }
+        }
+
+        function hideRetroactiveTerms() {
+            b2bRetroSection.classList.add('hidden');
+            checkoutButton.disabled = false;
+            checkoutButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            checkoutButton.classList.add('hover:bg-black');
+            checkoutButton.innerText = 'Continue to Checkout';
         }
 
         b2bTermsCheckbox.addEventListener('change', (e) => {
