@@ -37,6 +37,15 @@
             font-weight: 600;
             color: #374151;
         }
+        /* Hide number input spinners */
+        .no-spinners::-webkit-outer-spin-button,
+        .no-spinners::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .no-spinners {
+            -moz-appearance: textfield;
+        }
     </style>
 </head>
 <body class="bg-white text-gray-900 antialiased">
@@ -165,7 +174,8 @@
                                 </button>
                             </div>
                         </div>
-                        <p id="rfp-subtext" class="text-xs text-gray-500 mt-3 text-center hidden">Our sales team shall be reaching out to you shortly.</p>
+                        <!-- Updated dynamic subtext container -->
+                        <p id="checkout-subtext" class="text-xs text-gray-500 mt-4 text-center font-medium">Cart value above $20,000 will qualify for our tailored B2B experience.</p>
                     </div>
                 </form>
             </div>
@@ -193,12 +203,12 @@
                                 
                                 <div class="flex items-center border border-gray-300 rounded mt-2 w-max">
                                     <button type="button" id="qty-minus" class="px-2.5 py-1 text-gray-600 hover:bg-gray-100 hover:text-black transition focus:outline-none">-</button>
-                                    <span id="qty-display" class="px-3 py-1 text-sm font-semibold border-x border-gray-300 min-w-[36px] text-center bg-gray-50">20</span>
+                                    <span id="qty-display" class="px-3 py-1 text-sm font-semibold border-x border-gray-300 min-w-[36px] text-center bg-gray-50">10</span>
                                     <button type="button" id="qty-plus" class="px-2.5 py-1 text-gray-600 hover:bg-gray-100 hover:text-black transition focus:outline-none">+</button>
                                 </div>
                             </div>
                         </div>
-                        <span id="chair-line-total" class="text-sm font-medium text-gray-800">$20,000.00</span>
+                        <span id="chair-line-total" class="text-sm font-medium text-gray-800">$10,000.00</span>
                     </div>
 
                     <!-- Base Cart Items -->
@@ -226,7 +236,7 @@
                 <div class="space-y-3 text-sm text-gray-700 mb-6">
                     <div class="flex justify-between">
                         <span>Subtotal</span>
-                        <span id="summary-subtotal">$25,000.00</span>
+                        <span id="summary-subtotal">$15,000.00</span>
                     </div>
                     
                     <div id="summary-b2b-discount" class="flex justify-between text-green-700 hidden font-medium">
@@ -246,7 +256,7 @@
 
                 <div class="flex justify-between items-center font-bold text-xl pt-4 border-t border-gray-200">
                     <span>Estimated Total</span>
-                    <span id="summary-total">$25,000.00</span>
+                    <span id="summary-total">$15,000.00</span>
                 </div>
 
                 <div class="mt-8 text-center text-sm text-gray-500">
@@ -270,44 +280,60 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-800 mb-2">Are you buying this for office use?</label>
                     <div class="flex gap-4">
-                        <label class="flex items-center gap-2"><input type="radio" name="office_use" value="yes" checked class="w-4 h-4 text-gray-900 focus:ring-gray-900"> Yes</label>
-                        <label class="flex items-center gap-2"><input type="radio" name="office_use" value="no" class="w-4 h-4 text-gray-900 focus:ring-gray-900"> No</label>
+                        <label class="flex items-center gap-2"><input type="radio" name="office_use" value="yes" class="w-4 h-4 text-gray-900 focus:ring-gray-900"> Yes</label>
+                        <label class="flex items-center gap-2"><input type="radio" name="office_use" value="no" checked class="w-4 h-4 text-gray-900 focus:ring-gray-900"> No</label>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-800 mb-1">Future purchases in 2026?</label>
-                        <select class="w-full p-2 border border-gray-300 rounded text-sm bg-white" required>
-                            <option value="">Select...</option>
-                            <option value="yes">Yes</option>
-                            <option value="no">No</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-800 mb-1">Global offices count?</label>
-                        <input type="number" min="1" class="w-full p-2 border border-gray-300 rounded text-sm" placeholder="e.g. 3" required>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-800 mb-2">Estimated Units Needed:</label>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="flex items-center justify-between border border-gray-200 p-2 rounded">
-                            <span class="text-sm text-gray-700">Chairs</span>
-                            <select class="p-1 border border-gray-300 rounded text-xs bg-white w-20"><option value="0">0</option><option value="1-10">1-10</option><option value="11-50">11-50</option><option value="50+">50+</option></select>
+                <div id="b2b-extended-questions" class="hidden space-y-5">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-800 mb-1">Future purchases in 2026?</label>
+                            <select id="future-purchases" class="w-full p-2 border border-gray-300 rounded text-sm bg-white">
+                                <option value="">Select...</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
                         </div>
-                        <div class="flex items-center justify-between border border-gray-200 p-2 rounded">
-                            <span class="text-sm text-gray-700">Desks</span>
-                            <select class="p-1 border border-gray-300 rounded text-xs bg-white w-20"><option value="0">0</option><option value="1-10">1-10</option><option value="11-50">11-50</option><option value="50+">50+</option></select>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-800 mb-1">Global offices count?</label>
+                            <input type="number" id="global-offices" min="1" class="w-full p-2 border border-gray-300 rounded text-sm" placeholder="e.g. 3">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-800 mb-2">Estimated Units Needed:</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="flex items-center justify-between border border-gray-200 p-2 rounded">
+                                <span class="text-sm text-gray-700">Chairs</span>
+                                <div class="flex items-center border border-gray-300 rounded bg-white w-24">
+                                    <button type="button" class="px-2 py-0.5 text-gray-600 hover:bg-gray-100 hover:text-black transition focus:outline-none" onclick="this.nextElementSibling.stepDown()">-</button>
+                                    <input type="number" min="0" value="0" class="w-full text-center text-xs font-semibold focus:outline-none border-x border-gray-300 py-1 no-spinners">
+                                    <button type="button" class="px-2 py-0.5 text-gray-600 hover:bg-gray-100 hover:text-black transition focus:outline-none" onclick="this.previousElementSibling.stepUp()">+</button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between border border-gray-200 p-2 rounded">
+                                <span class="text-sm text-gray-700">Desks</span>
+                                <div class="flex items-center border border-gray-300 rounded bg-white w-24">
+                                <input type="number" min="0" value="0" class="w-full text-center text-xs font-semibold focus:outline-none border-x border-gray-300 py-1 no-spinners">
+                                <button type="button" class="px-2 py-0.5 text-gray-600 hover:bg-gray-100 hover:text-black transition focus:outline-none" onclick="this.previousElementSibling.stepUp()">+</button>
+                            </div>
                         </div>
                         <div class="flex items-center justify-between border border-gray-200 p-2 rounded">
                             <span class="text-sm text-gray-700">Meeting Tables</span>
-                            <select class="p-1 border border-gray-300 rounded text-xs bg-white w-20"><option value="0">0</option><option value="1-10">1-10</option><option value="11-50">11-50</option><option value="50+">50+</option></select>
+                            <div class="flex items-center border border-gray-300 rounded bg-white w-24">
+                                <button type="button" class="px-2 py-0.5 text-gray-600 hover:bg-gray-100 hover:text-black transition focus:outline-none" onclick="this.nextElementSibling.stepDown()">-</button>
+                                <input type="number" min="0" value="0" class="w-full text-center text-xs font-semibold focus:outline-none border-x border-gray-300 py-1 no-spinners">
+                                <button type="button" class="px-2 py-0.5 text-gray-600 hover:bg-gray-100 hover:text-black transition focus:outline-none" onclick="this.previousElementSibling.stepUp()">+</button>
+                            </div>
                         </div>
                         <div class="flex items-center justify-between border border-gray-200 p-2 rounded">
                             <span class="text-sm text-gray-700">Storage & Pods</span>
-                            <select class="p-1 border border-gray-300 rounded text-xs bg-white w-20"><option value="0">0</option><option value="1-10">1-10</option><option value="11-50">11-50</option><option value="50+">50+</option></select>
+                            <div class="flex items-center border border-gray-300 rounded bg-white w-24">
+                                <button type="button" class="px-2 py-0.5 text-gray-600 hover:bg-gray-100 hover:text-black transition focus:outline-none" onclick="this.nextElementSibling.stepDown()">-</button>
+                                <input type="number" min="0" value="0" class="w-full text-center text-xs font-semibold focus:outline-none border-x border-gray-300 py-1 no-spinners">
+                                <button type="button" class="px-2 py-0.5 text-gray-600 hover:bg-gray-100 hover:text-black transition focus:outline-none" onclick="this.previousElementSibling.stepUp()">+</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -321,16 +347,17 @@
 
                 <div class="bg-blue-50 p-4 rounded border border-blue-100 mt-4">
                     <label class="flex items-start gap-3 cursor-pointer">
-                        <input type="checkbox" id="b2b-hr-check" required class="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <input type="checkbox" id="b2b-hr-check" class="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                         <span class="text-xs font-medium text-blue-900 leading-snug">
                             We encourage you to check with your HR or admin to see if you are already currently enjoying our tailored B2B shopping experience. Check this box to confirm you are not utilizing an existing B2B client account.
                         </span>
                     </label>
                 </div>
+                </div>
 
                 <div class="mt-6 pt-4 border-t border-gray-200 flex justify-end gap-3">
                     <button type="button" onclick="closeModalWithoutB2B()" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Skip</button>
-                    <button type="submit" id="claim-discount-btn" class="px-5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded transition-colors shadow-sm">Claim Discount</button>
+                    <button type="submit" id="claim-discount-btn" disabled class="px-5 py-2 text-sm font-medium text-white bg-gray-400 cursor-not-allowed rounded transition-colors shadow-sm">Not Eligible for Discount</button>
                 </div>
             </form>
         </div>
@@ -340,7 +367,7 @@
         // -- DYNAMIC CART LOGIC -- //
         const BASE_CART_VALUE = 5000.00; // Value of fixed items (desks, etc)
         const CHAIR_PRICE = 1000.00;
-        let chairQuantity = 20; // 20 chairs * $1000 = $20000 + $5000 base = $25000 total
+        let chairQuantity = 10; // 10 chairs * $1000 = $10000 + $5000 base = $15000 total
         const DISCOUNT_RATE = 0.05;
         
         let b2bTriggered = false;
@@ -357,10 +384,18 @@
         const checkoutButton = document.getElementById('checkout-button');
         const rfpBtnWrapper = document.getElementById('rfp-btn-wrapper');
         const rfpButton = document.getElementById('rfp-button');
-        const rfpSubtext = document.getElementById('rfp-subtext');
+        const checkoutSubtext = document.getElementById('checkout-subtext');
 
         const b2bTermsCheckbox = document.getElementById('b2b-terms-checkbox');
         const claimLaterBanner = document.getElementById('claim-later-banner');
+        
+        // Elements for office use radio logic
+        const officeUseRadios = document.querySelectorAll('input[name="office_use"]');
+        const claimDiscountBtn = document.getElementById('claim-discount-btn');
+        const b2bExtendedQuestions = document.getElementById('b2b-extended-questions');
+        const futurePurchasesSelect = document.getElementById('future-purchases');
+        const globalOfficesInput = document.getElementById('global-offices');
+        const hrCheckInput = document.getElementById('b2b-hr-check');
         
         // Cart UI Elements
         const qtyMinusBtn = document.getElementById('qty-minus');
@@ -408,7 +443,12 @@
             // Update Modal & Banner Text dynamically 
             document.getElementById('modal-title').innerText = `Claim your ${formatMoney(discountAmount)} Business Discount`;
             document.getElementById('banner-savings-amount').innerText = formatMoney(discountAmount);
-            document.getElementById('claim-discount-btn').innerText = `Claim ${formatMoney(discountAmount)} Discount`;
+            
+            if (document.querySelector('input[name="office_use"]:checked').value === 'yes') {
+                document.getElementById('claim-discount-btn').innerText = `Claim ${formatMoney(discountAmount)} Discount`;
+            } else {
+                document.getElementById('claim-discount-btn').innerText = 'Not Eligible for Discount';
+            }
 
             // Evaluate RFP Threshold Based on Final Total
             evaluateCheckoutState(currentTotal);
@@ -427,22 +467,54 @@
             updateCart();
         });
 
+        // Office Use Radio Buttons Logic
+        officeUseRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if (e.target.value === 'no') {
+                    claimDiscountBtn.disabled = true;
+                    claimDiscountBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                    claimDiscountBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+                    
+                    b2bExtendedQuestions.classList.add('hidden');
+                    futurePurchasesSelect.required = false;
+                    globalOfficesInput.required = false;
+                    hrCheckInput.required = false;
+                } else {
+                    claimDiscountBtn.disabled = false;
+                    claimDiscountBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                    claimDiscountBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                    
+                    b2bExtendedQuestions.classList.remove('hidden');
+                    futurePurchasesSelect.required = true;
+                    globalOfficesInput.required = true;
+                    hrCheckInput.required = true;
+                }
+                updateCart(); // Refresh dynamic text 
+            });
+        });
 
         // RFP Threshold Evaluator
         function evaluateCheckoutState(total) {
-            // Show both buttons side-by-side if > $20,000 AND email is a corporate email
+            // 1. Manage Dynamic Subtext based on total
+            if (total > 20000) {
+                checkoutSubtext.innerText = 'You can Submit RFP now, and our Steelcase experience specialist shall be contacting you within 2 working days.';
+                checkoutSubtext.classList.replace('text-gray-500', 'text-blue-600');
+            } else {
+                checkoutSubtext.innerText = 'Cart value above $20,000 will qualify for our tailored B2B experience.';
+                checkoutSubtext.classList.replace('text-blue-600', 'text-gray-500');
+            }
+
+            // 2. Manage Button Visibility (Requires total > 20k AND Corporate Email)
             if (total > 20000 && isCompanyEmailValid) {
                 actionContainer.classList.remove('grid-cols-1');
                 actionContainer.classList.add('grid-cols-2');
                 rfpBtnWrapper.classList.remove('hidden');
                 rfpBtnWrapper.classList.add('flex');
-                rfpSubtext.classList.remove('hidden');
             } else {
                 actionContainer.classList.add('grid-cols-1');
                 actionContainer.classList.remove('grid-cols-2');
                 rfpBtnWrapper.classList.add('hidden');
                 rfpBtnWrapper.classList.remove('flex');
-                rfpSubtext.classList.add('hidden');
             }
             
             // Ensure retroactive logic is maintained if reverting back
